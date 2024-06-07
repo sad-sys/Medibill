@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Invoice</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .main-form-container, .formset-container {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+        }
+        h2 {
+            color: #343a40;
+        }
+        h3 {
+            font-size: 20px;
+            text-align: center;
+        }
+        .form-row {
+            margin-bottom: 15px;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-row input, .form-row select, .form-row textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        .button-row {
+            text-align: center;
+        }
+        .button-row button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button-row button:hover {
+            background-color: #0056b3;
+        }
+        #add-form {
+            background-color: #28a745;
+        }
+        #add-form:hover {
+            background-color: #218838;
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+            let form_idx = $('#id_form-TOTAL_FORMS').val();  // Get the current number of forms
+
+            $('#add-form').click(function() {
+                const formTemplate = $('#empty-form').html().replace(/__prefix__/g, form_idx);
+                $('#formset').append(formTemplate);
+                form_idx++;
+                $('#id_form-TOTAL_FORMS').val(form_idx);  // Update the management form total
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Docucount</h1>
+        <h3>Create your invoice</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="main-form-container">
+                <h2>Surgery Information</h2>
+                {{ surgeryForm.as_p }}
+            </div>
+            <div class="formset-container" id="formset">
+                <h2>Calendar Entries</h2>
+                {{ calendarFormSet.management_form }}
+                {% for form in calendarFormSet %}
+                    <div class="form-row">
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="button-row">
+                <button type="button" id="add-form">Add Form</button>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+        {% if filename %}
+            <div class="button-row">
+                <a href="{% url 'download_invoice' filename %}" class="btn btn-primary">Download Invoice</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Template for new forms -->
+    <div id="empty-form" style="display:none;">
+        <div class="form-row">
+            {{ calendarFormSet.empty_form.as_p }}
+        </div>
+    </div>
+</body>
+</html>

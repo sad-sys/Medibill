@@ -1,0 +1,113 @@
+from django.shortcuts import render
+
+# Create your views here.
+from django.shortcuts import render
+from django.http import HttpResponse
+from .forms import InvoiceForm
+from docx import Document
+from datetime import datetime
+
+def generate_invoice(request):
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST)
+        if form.is_valid():
+
+            global gpPay
+            global gpPay1
+            global table1
+            global document
+
+            address = ''
+            gpName = ["Pondtail Surgery","Shirley Medical Centre","Bishopford Road Surgery", "Thornton Road Medical Centre"]
+
+            gpPay =  [ 72.5, 85, 95, 110]
+
+            gpChoice = input("Please input which surgery the invoice is for     ")
+            #For test purposes only
+            #gpChoice = ("Bishopford Road Surgery")
+
+            global gpHours
+            gpHours = int(input("Please input the hours worked                  "))
+
+            gpIndex = -1
+
+            for i in range (0,len(gpName)):
+                if gpName[i] == gpChoice:
+                    gpIndex = i
+
+            if gpIndex == -1:
+                gpPay1 = int(input("Please input a GP pay                   "))
+            gpPay1 = gpPay[i]
+
+            document = Document()
+            document.add_heading('Invoice', 0)
+
+            'Top Left, Invoice; Date, Year/Month,'
+
+
+            today = datetime.today()
+            formatted_date = today.strftime("%d/%m/%Y")
+
+            print("Current date in dd/MM/YYYY format:", formatted_date)
+
+            date = formatted_date
+            targetMonth = input("Please enter the month the invoice is for      ")
+            topLeft = document.add_paragraph("DATE\n")
+            topLeft.add_run(date)
+            topLeft.add_run("\nInvoice for ")
+            topLeft.add_run(targetMonth)
+
+            'Top Right, Company Name, address, email, account No, sort code'
+            'Declare the Variables'
+            companyName = 'Sadiber LTD'
+            firstLine   = '23 Church Hill'
+            postCode    = 'CR8 3QP'
+            phoneNumber = '07872614143'
+            email       = 'drsophiakhawaja@gmail.com'
+            accountNo   =  '14459418'
+            sortCode    =  '09-01-29'
+
+            topRight = document.add_paragraph(companyName)
+            topRight.add_run("\n")
+            topRight.add_run(firstLine)
+            topRight.add_run("\n")
+            topRight.add_run(postCode)
+            topRight.add_run("\n")
+            topRight.add_run(phoneNumber)
+            topRight.add_run("\n")
+            topRight.add_run(email)
+            topRight.add_run("\n")
+            topRight.add_run(accountNo)
+            topRight.add_run("\n")
+            topRight.add_run(sortCode)
+
+            topRight.alignment = 2
+
+            'Bottom Left, Who is the Invoice too?'
+            addressLine1 = gpChoice
+
+            bottomLeft = document.add_paragraph("INVOICE TO")
+            bottomLeft.add_run("\n")
+            bottomLeft.add_run(addressLine1)
+            bottomLeft.add_run("\n")
+            #bottomLeft.add_run(addressLine2)
+
+
+            'Table for the income'
+            table1 = document.add_table(rows=1, cols=3, style = 'Medium Grid 1 Accent 1')
+
+            column = table1.rows[0].cells
+            column[0].text = 'Date'
+            column[1].text = 'No. of Hours'
+            column[2].text = 'Amount'
+
+            global data
+
+            data = \
+            [
+            ]
+
+            return HttpResponse("Invoice generated successfully!")
+    else:
+        form = InvoiceForm()
+    return render(request, 'generate_invoice.html', {'form': form})
