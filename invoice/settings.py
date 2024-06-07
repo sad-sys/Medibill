@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-$5c%x@#-@hsi#qcb8))3-7pm!6*6g)xkoj(*-u%+i@jswknd8z
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1','octopus-app-zpan5.ondigitalocean.app']
 
 
 DEBUG = True
