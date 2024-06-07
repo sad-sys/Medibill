@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse,FileResponse
 from .forms import LoginForm, surgeryForm, calendarForm
-
+from django.conf import settings
+import os
 from django.forms import formset_factory
 from docx import Document
 from datetime import datetime
@@ -54,7 +55,7 @@ def makeInvoice(request):
 
 
 def download_invoice(request, filename):
-    file_path = f"/Users/sadiqkhawaja/Documents/Brackets/Invoice Django/invoice/{filename}"
+    file_path = os.path.join(settings.BASE_DIR, filename)
     response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=filename)
     return response
 
