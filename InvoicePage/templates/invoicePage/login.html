@@ -19,12 +19,13 @@
     <div class = "formDiv">
         <form method = "post">
             {% csrf_token %}
-            <label for="email">Email:</label>
+            <label for="email">Email: :</label>
             <input type="text" id="email" name="email"  value="{{ loginform.email.value|default_if_none:'' }}">
             <br>
             <br>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" value="{{ loginform.password.value|default_if_none:'' }}">
+            <button type = "submit"> Submit </button>
         </form>
     </div>
 </body>

@@ -5,7 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
 </head>
+<style>
+    body{
+        text-align: center;
+        margin-top: 30vh;
+    }
+    .formDiv{
+        text-align: left;
+        margin-left: 80vh;
+    }
+</style>
 <body>
-    
+    <div>
+        Register
+    </div>
+    <br>
+    <br>
+    <div class = "formDiv">
+        <form method = "post">
+            {% csrf_token %}
+            <label for="email">Email: :</label>
+            <input type="text" id="email" name="email"  value="{{ registerform.email.value|default_if_none:'' }}">
+            <br>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="{{ registerform.password.value|default_if_none:'' }}">
+            <button type = "submit"> Submit </button>
+        </form>
+    </div>
 </body>
 </html>

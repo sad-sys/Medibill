@@ -5,6 +5,10 @@ class LoginForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
 
+class RegisterForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
 class surgeryForm(forms.Form):
     surgeryChosen = forms.ChoiceField(
         choices=[

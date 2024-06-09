@@ -1,36 +1,74 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,FileResponse
-from .forms import LoginForm, surgeryForm, calendarForm
+from .forms import LoginForm, surgeryForm, calendarForm, RegisterForm
+from django.views.decorators.csrf import csrf_protect
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 import os
 from django.forms import formset_factory
 from docx import Document
 from datetime import datetime
+from .models import CustomUser
 import random
 import string
 
 def index(request):
     return render(request, "invoicePage/index.html")
 
-def login(request):
+@csrf_protect
+def loginView(request):
     if request.method == 'POST':
         loginForm = LoginForm(request.POST)
-        email = loginForm.cleaned_data.get('email')
-        password = loginForm.cleaned_data.get('password')
-        user = authenticate(request, email=email, password=password)
-        userID = user.ID
-        return redirect('home', userID = userID)
+        if loginForm.is_valid():
+            email = loginForm.cleaned_data.get('email')
+            password = loginForm.cleaned_data.get('password')
+            
+            try:
+                customUser = CustomUser.objects.get(email=email)
+                if customUser.check_password(password):
+                    login(request, customUser)  # Log the user in
+                    userID = customUser.id
+                    return redirect('makeInvoice', userID=userID)
+                else:
+                    print("Invalid credentials")
+                    return redirect("loginView")
+            except CustomUser.DoesNotExist:
+                print("User does not exist")
+                return redirect("loginView")
     else:
         loginForm = LoginForm()
     return render(request, "invoicePage/login.html", {"loginForm": loginForm})
 
+@csrf_protect
 def register(request):
-    return render(request, "invoicePage/register.html")
+    if request.method == "POST":
+        registerForm = RegisterForm(request.POST)
+        if registerForm.is_valid():
+            email = registerForm.cleaned_data.get('email')
+            password = registerForm.cleaned_data.get('password')
+            print (email,password)
+            if CustomUser.objects.filter(email = email).exists():
+                print ("Not Permitted")
+                return redirect(register)
+            else:
+                user = authenticate(request, email=email, password=password)
+                if user is None:
+                    user = CustomUser.objects.newUser\
+                    (
+                        email=email,
+                        password=password,
+                    )
+                    user.save()
+                    login(request, user)
+                    return redirect('makeInvoice', userID = user.id)
+
+    else:
+        registerForm = RegisterForm(request.POST)
+    return render(request, "invoicePage/register.html", {"registerform": registerForm})
 
 from datetime import datetime
 
-def makeInvoice(request):
+def makeInvoice(request, userID):
     allData = []
     CalendarFormSet = formset_factory(calendarForm, extra=0)  # Set extra to 0
     calendar_formset = CalendarFormSet()  # Instantiate formset
