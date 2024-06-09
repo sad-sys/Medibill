@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse,FileResponse
 from .forms import LoginForm, surgeryForm, calendarForm
 from django.conf import settings
+from django.contrib.auth import login, authenticate
 import os
 from django.forms import formset_factory
 from docx import Document
@@ -13,7 +14,15 @@ def index(request):
     return render(request, "invoicePage/index.html")
 
 def login(request):
-    loginForm = LoginForm()
+    if request.method == 'POST':
+        loginForm = LoginForm(request.POST)
+        email = loginForm.cleaned_data.get('email')
+        password = loginForm.cleaned_data.get('password')
+        user = authenticate(request, email=email, password=password)
+        userID = user.ID
+        return redirect('home', userID = userID)
+    else:
+        loginForm = LoginForm()
     return render(request, "invoicePage/login.html", {"loginForm": loginForm})
 
 def register(request):

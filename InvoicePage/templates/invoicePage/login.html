@@ -5,7 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 </head>
+<style>
+    body{
+        text-align: center;
+        margin-top: 30vh;
+    }
+    .formDiv{
+        text-align: left;
+        margin-left: 50vh;
+    }
+</style>
 <body>
-    
+    <div class = "formDiv">
+        <form method = "post">
+            {% csrf_token %}
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email"  value="{{ loginform.email.value|default_if_none:'' }}">
+            <br>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="{{ loginform.password.value|default_if_none:'' }}">
+        </form>
+    </div>
 </body>
 </html>
