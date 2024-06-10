@@ -8,4 +8,5 @@ urlpatterns = \
     path('register', views.register, name='register'),
     path('makeInvoice/<str:userID>/', views.makeInvoice, name='makeInvoice'),
     path('download_invoice/<str:filename>/', views.download_invoice, name='download_invoice'),
+    path('inputDetails/<str:userID>/', views.inputDetails, name='inputDetails')
 ]

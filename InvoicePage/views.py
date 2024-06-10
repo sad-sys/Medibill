@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,FileResponse
-from .forms import LoginForm, surgeryForm, calendarForm, RegisterForm
+from .forms import LoginForm, surgeryForm, calendarForm, RegisterForm, DetailsForm
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 import os
@@ -60,20 +61,36 @@ def register(request):
                     )
                     user.save()
                     login(request, user)
-                    return redirect('makeInvoice', userID = user.id)
+                    return redirect('inputDetails', userID = user.id)
 
     else:
         registerForm = RegisterForm(request.POST)
     return render(request, "invoicePage/register.html", {"registerform": registerForm})
 
-from datetime import datetime
+@csrf_protect
+def inputDetails(request, userID):
+    if CustomUser.objects.filter(id = userID).exists():
+        user = CustomUser.objects.get(id = userID)
+        if request.method == "POST":
+            detailsForm = DetailsForm(request.POST)
+            if detailsForm.is_valid():
+                user.sortCode = detailsForm.cleaned_data.get("sortCode")              
+                user.phoneNumber = detailsForm.cleaned_data.get("phoneNumber")
+                user.address = detailsForm.cleaned_data.get("address")
+                user.company = detailsForm.cleaned_data.get("company")
+                user.bankDetail = detailsForm.cleaned_data.get("bankDetail")
+                print(user, user.sortCode,user.phoneNumber, user.address, user.company, user.bankDetail)
+                user.save()
+    else:
+        detailsForm = DetailsForm(request.POST)
+    return render(request, "invoicePage/inputDetails.html", {"detailsForm":detailsForm})
 
 def makeInvoice(request, userID):
     allData = []
-    CalendarFormSet = formset_factory(calendarForm, extra=0)  # Set extra to 0
+    CalendarFormSet = formset_factory(calendarForm, extra=1)  # Set extra to 0
     calendar_formset = CalendarFormSet()  # Instantiate formset
     surgery_form = surgeryForm()  # Instantiate surgery form
-
+    user = CustomUser.objects.get(id = userID)
     if request.method == 'POST':
         surgery_form = surgeryForm(request.POST)
         calendar_formset = CalendarFormSet(request.POST, request.FILES)  # Re-instantiate formset with POST data

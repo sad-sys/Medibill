@@ -9,6 +9,13 @@ class RegisterForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
 
+class DetailsForm(forms.Form):
+    sortCode = forms.CharField()
+    phoneNumber = forms.IntegerField()
+    address = forms.CharField()
+    company = forms.CharField()
+    bankDetail = forms.CharField()
+
 class surgeryForm(forms.Form):
     surgeryChosen = forms.ChoiceField(
         choices=[
