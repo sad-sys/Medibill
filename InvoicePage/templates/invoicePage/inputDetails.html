@@ -4,13 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Input Details</title>
+    <head>
+        <title>Medical Invoice</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa;
+                margin: 0;
+                padding: 0;
+                text-align: center;
+            }
+            .container {
+                width: 80%;
+                margin: auto;
+                background-color: #ffffff;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .main-form-container, .formset-container {
+                margin-bottom: 20px;
+                padding: 20px;
+                background-color: #e9ecef;
+                border-radius: 10px;
+            }
+            h1 {
+                color: #007bff;
+                text-align: center;
+            }
+            h2 {
+                color: #343a40;
+            }
+            h3 {
+                font-size: 20px;
+                text-align: center;
+            }
+            .form-row {
+                margin-bottom: 15px;
+            }
+            .form-row label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            .form-row input, .form-row select, .form-row textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ced4da;
+                border-radius: 5px;
+            }
+            .button-row {
+                text-align: center;
+            }
+            .button-row button {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin: 5px;
+            }
+            .button-row button:hover {
+                background-color: #0056b3;
+            }
+            #add-form {
+                background-color: #28a745;
+            }
+            #add-form:hover {
+                background-color: #218838;
+            }
+        </style>
+    </head>
 </head>
 <body>
-    {{userEmail}}
-    <form method = "post">
-        {% csrf_token %}
-        {{ detailsForm.as_p }}
-        <button type = "submit">Submit Details</button>
-    </form>
+    <div>
+        <h1>Input Details which would be added to your invoice</h1>
+    </div>
+    <div style = "text-align: left; margin-left: 70vh ; margin-top: 10vh;">
+        {{userEmail}}
+        <form method = "post">
+            {% csrf_token %}
+            {{ detailsForm.as_p }}
+            <button type = "submit">Add details to Invoice</button>
+        </form>
+        <br>
+        <br>
+        <br>
+        <a href="{% url 'makeInvoice' userID %}">
+            <button type="button">Make first Invoice </button>
+        </a>
+    </div>
 </body>
 </html>

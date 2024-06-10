@@ -69,23 +69,24 @@ def register(request):
 
 @csrf_protect
 def inputDetails(request, userID):
-    if CustomUser.objects.filter(id = userID).exists():
-        user = CustomUser.objects.get(id = userID)
-        if request.method == "POST":
-            detailsForm = DetailsForm(request.POST)
-            if detailsForm.is_valid():
-                user.sortCode = detailsForm.cleaned_data.get("sortCode")              
-                user.phoneNumber = detailsForm.cleaned_data.get("phoneNumber")
-                user.address = detailsForm.cleaned_data.get("address")
-                user.company = detailsForm.cleaned_data.get("company")
-                user.bankDetail = detailsForm.cleaned_data.get("bankDetail")
-                print(user, user.sortCode,user.phoneNumber, user.address, user.company, user.bankDetail)
-                user.save()
-    else:
+    user = CustomUser.objects.get(id = userID)
+    if request.method == "POST":
         detailsForm = DetailsForm(request.POST)
-    return render(request, "invoicePage/inputDetails.html", {"detailsForm":detailsForm})
+        if detailsForm.is_valid():
+            user.sortCode = detailsForm.cleaned_data.get("sortCode")              
+            user.phoneNumber = detailsForm.cleaned_data.get("phoneNumber")
+            user.address = detailsForm.cleaned_data.get("address")
+            user.company = detailsForm.cleaned_data.get("company")
+            user.bankDetail = detailsForm.cleaned_data.get("bankDetail")
+            print(user, user.sortCode,user.phoneNumber, user.address, user.company, user.bankDetail)
+            user.save()
+    else:
+        detailsForm = DetailsForm()
+    return render(request, "invoicePage/inputDetails.html", {"detailsForm":detailsForm, "userID":user.id, "userEmail":user.email})
 
 def makeInvoice(request, userID):
+    userDetails = CustomUser.objects.get(id = userID)
+    print ("Make Invoice Selected")
     allData = []
     CalendarFormSet = formset_factory(calendarForm, extra=1)  # Set extra to 0
     calendar_formset = CalendarFormSet()  # Instantiate formset
@@ -111,7 +112,7 @@ def makeInvoice(request, userID):
             print("Surgery form cleaned data:", surgery_form.cleaned_data)
 
             # Create invoice using the cleaned data
-            filename = createInvoice(allData, surgery_form.cleaned_data['surgeryChosen'], target_month)  # Update to match field name
+            filename = createInvoice(allData, surgery_form.cleaned_data['surgeryChosen'], target_month,userDetails)  # Update to match field name
             return render(request, "invoicePage/makeInvoice.html", {"calendarFormSet": calendar_formset, "surgeryForm": surgery_form, "filename": filename})
         else:
             print("Formset or surgery form is not valid")
@@ -124,7 +125,7 @@ def download_invoice(request, filename):
     return response
 
 
-def createInvoice(entries, gp_choice, target_month):
+def createInvoice(entries, gp_choice, target_month, userDetails):
     gpName = ["Pondtail Surgery", "Shirley Medical Centre", "Bishopford Road Surgery", "Thornton Road Medical Centre"]
     gpPay = [72.5, 85, 95, 110]
 
@@ -150,13 +151,13 @@ def createInvoice(entries, gp_choice, target_month):
     topLeft.add_run("\nInvoice for ")
     topLeft.add_run(target_month)
 
-    companyName = 'Sadiber LTD'
-    firstLine = '23 Church Hill'
+    companyName = str(userDetails.company)
+    firstLine = str(userDetails.address)
     postCode = 'CR8 3QP'
-    phoneNumber = '07872614143'
-    email = 'drsophiakhawaja@gmail.com'
-    accountNo = '14459418'
-    sortCode = '09-01-29'
+    phoneNumber = str(userDetails.phoneNumber)
+    email = str(userDetails.email)
+    accountNo = str(userDetails.bankDetail)
+    sortCode = str(userDetails.sortCode)
 
     topRight = document.add_paragraph(companyName)
     topRight.add_run("\n")
