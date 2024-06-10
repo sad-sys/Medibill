@@ -4,28 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 400px;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-row input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
-<style>
-    body{
-        text-align: center;
-        margin-top: 30vh;
-    }
-    .formDiv{
-        text-align: left;
-        margin-left: 50vh;
-    }
-</style>
 <body>
-    <div class = "formDiv">
-        <form method = "post">
+    <div class="container">
+        <h1>Login</h1>
+        <form method="post">
             {% csrf_token %}
-            <label for="email">Email: :</label>
-            <input type="text" id="email" name="email"  value="{{ loginform.email.value|default_if_none:'' }}">
-            <br>
-            <br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" value="{{ loginform.password.value|default_if_none:'' }}">
-            <button type = "submit"> Submit </button>
+            <div class="form-row">
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" value="{{ loginform.email.value|default_if_none:'' }}">
+            </div>
+            <div class="form-row">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" value="{{ loginform.password.value|default_if_none:'' }}">
+            </div>
+            <button type="submit">Submit</button>
         </form>
     </div>
 </body>

@@ -23,7 +23,7 @@ class userManager(BaseUserManager):
     
 class CustomUser(AbstractBaseUser):
     email = models.EmailField(unique = True)
-    invoices = models.JSONField(null=True)
+    invoices = models.JSONField(default=list, null=True, blank=True)
     sortCode = models.JSONField(null=True)
     phoneNumber = models.IntegerField(null=True)
     address = models.JSONField(null = True)

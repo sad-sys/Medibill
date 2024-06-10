@@ -104,7 +104,10 @@
             </div>
             <div class="button-row">
                 <button type="button" id="add-form">Add Form</button>
-                <button type="submit">Download Invoice</button>
+                <button type="submit">Submit</button>
+                <a href= "{% url 'inputDetails' userID %}"
+                    <button type = "submit"> Input Details </button>
+                </a>
             </div>
         </form>
         {% if filename %}

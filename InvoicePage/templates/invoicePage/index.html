@@ -3,16 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvoiceMaker</title>
+    <title>MediBill</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #343a40;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .button-row a {
+            text-decoration: none;
+        }
+        .button-row button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button-row button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    Make Invoices Fast
-    <a href = "{% url 'loginView' %}">
-        <button>Login</button>
-    </a>
-    <p>Or</p>
-    <a href = "{% url 'register' %}">
-        <button>Register</button>
-    </a>
+    <div class="container">
+        <h1>Welcome to MediBill</h1>
+        <p>Create and manage your invoices easily</p>
+        <div class="button-row">
+            <a href="{% url 'loginView' %}">
+                <button>Login</button>
+            </a>
+            <a href="{% url 'register' %}">
+                <button>Register</button>
+            </a>
+        </div>
+    </div>
 </body>
 </html>

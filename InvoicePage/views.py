@@ -84,26 +84,36 @@ def inputDetails(request, userID):
         detailsForm = DetailsForm()
     return render(request, "invoicePage/inputDetails.html", {"detailsForm":detailsForm, "userID":user.id, "userEmail":user.email})
 
+from django.forms.models import model_to_dict
+from datetime import datetime
+
 def makeInvoice(request, userID):
-    userDetails = CustomUser.objects.get(id = userID)
-    print ("Make Invoice Selected")
+    userDetails = CustomUser.objects.get(id=userID)
+    print("Make Invoice Selected")
     allData = []
     CalendarFormSet = formset_factory(calendarForm, extra=1)  # Set extra to 0
     calendar_formset = CalendarFormSet()  # Instantiate formset
     surgery_form = surgeryForm()  # Instantiate surgery form
-    user = CustomUser.objects.get(id = userID)
+
     if request.method == 'POST':
         surgery_form = surgeryForm(request.POST)
         calendar_formset = CalendarFormSet(request.POST, request.FILES)  # Re-instantiate formset with POST data
+
         if calendar_formset.is_valid() and surgery_form.is_valid():  # Ensure all forms are valid
             for form in calendar_formset:
-                cleaned_data = form.cleaned_data  # Get cleaned data from each form
-                allData.append(cleaned_data)
-                print(allData[-1])
+                if form.cleaned_data:
+                    cleaned_data = form.cleaned_data  # Get cleaned data from each form
+                    # Convert date object to string if it exists
+                    if 'datesChosen' in cleaned_data and cleaned_data['datesChosen']:
+                        cleaned_data['datesChosen'] = cleaned_data['datesChosen'].strftime('%Y-%m-%d')
+                    if 'timeChosenStart' in cleaned_data and cleaned_data['timeChosenStart']:
+                        cleaned_data['timeChosenStart'] = cleaned_data['timeChosenStart'].strftime('%H:%M:%S')
+                    allData.append(cleaned_data)
+                    print(allData[-1])
 
-            # Get the target month from the first date
-            if allData:
-                first_date = allData[0]['datesChosen']
+            # Get the target month from the first date if available
+            if allData and 'datesChosen' in allData[0]:
+                first_date = datetime.strptime(allData[0]['datesChosen'], '%Y-%m-%d')
                 target_month = first_date.strftime('%B %Y')
             else:
                 target_month = "Unknown Month"
@@ -111,15 +121,26 @@ def makeInvoice(request, userID):
             # Debug print to check what is in cleaned_data
             print("Surgery form cleaned data:", surgery_form.cleaned_data)
 
+            # Ensure invoices field is a list
+            if userDetails.invoices is None:
+                userDetails.invoices = []
+
+            # Append new data to the invoices field
+            userDetails.invoices.append(allData)
+            userDetails.save()
+
             # Create invoice using the cleaned data
-            filename = createInvoice(allData, surgery_form.cleaned_data['surgeryChosen'], target_month,userDetails)  # Update to match field name
-            return render(request, "invoicePage/makeInvoice.html", {"calendarFormSet": calendar_formset, "surgeryForm": surgery_form, "filename": filename})
+            filename = createInvoice(allData, surgery_form.cleaned_data['surgeryChosen'], target_month, userDetails)  # Update to match field name
+            return render(request, "invoicePage/makeInvoice.html", {"calendarFormSet": calendar_formset, "surgeryForm": surgery_form, "filename": filename, "userID": userID})
         else:
             print("Formset or surgery form is not valid")
-    return render(request, "invoicePage/makeInvoice.html", {"calendarFormSet": calendar_formset, "surgeryForm": surgery_form})
+
+    return render(request, "invoicePage/makeInvoice.html", {"calendarFormSet": calendar_formset, "surgeryForm": surgery_form, "userID": userID})
 
 
-def download_invoice(request, filename):
+
+
+def download_invoice(request, filename,):
     file_path = os.path.join(settings.BASE_DIR, filename)
     response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=filename)
     return response
@@ -189,10 +210,12 @@ def createInvoice(entries, gp_choice, target_month, userDetails):
     total = 0
     for entry in entries:
         row = table1.add_row().cells
-        date_str = entry['datesChosen'].strftime('%d/%m/%Y')
+        date_str = entry['datesChosen']
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')  # Convert string back to datetime object
+        formatted_date = date_obj.strftime('%d/%m/%Y')
         hours = entry['hoursPerDay']
         amount = hours * gpPay1
-        row[0].text = date_str
+        row[0].text = formatted_date
         row[1].text = str(hours)
         row[2].text = f"£{amount:.2f}"
         total += amount
@@ -205,4 +228,5 @@ def createInvoice(entries, gp_choice, target_month, userDetails):
     filename = f"Invoice_{current_time}.docx"
     document.save(filename)
     return filename
+
 
