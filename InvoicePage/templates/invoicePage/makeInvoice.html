@@ -68,7 +68,24 @@
         }
         #add-form:hover {
             background-color: #218838;
+            }
+                .button-link {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
         }
+
+        .button-link:hover {
+            background-color: #0056b3;
+        }
+
     </style>
     <script>
         $(document).ready(function() {
@@ -103,10 +120,10 @@
                 {% endfor %}
             </div>
             <div class="button-row">
-                <button type="button" id="add-form">Add Form</button>
+                <button type="button" id="add-form">Add New Day</button>
                 <button type="submit">Submit</button>
-                <a href= "{% url 'inputDetails' userID %}"
-                    <button type = "submit"> Input Details </button>
+                <a href="{% url 'inputDetails' userID %}" class="button-link">
+                    Change Invoice Details
                 </a>
             </div>
         </form>

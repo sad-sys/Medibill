@@ -130,7 +130,7 @@ def makeInvoice(request, userID):
             userDetails.save()
 
             # Create invoice using the cleaned data
-            filename = createInvoice(allData, surgery_form.cleaned_data['surgeryChosen'], target_month, userDetails)  # Update to match field name
+            filename = createInvoice(allData, surgery_form.cleaned_data['surgeryChosen'],surgery_form.cleaned_data['hourlyRate'],target_month, userDetails)  # Update to match field name
             return render(request, "invoicePage/makeInvoice.html", {"calendarFormSet": calendar_formset, "surgeryForm": surgery_form, "filename": filename, "userID": userID})
         else:
             print("Formset or surgery form is not valid")
@@ -146,17 +146,22 @@ def download_invoice(request, filename,):
     return response
 
 
-def createInvoice(entries, gp_choice, target_month, userDetails):
+def createInvoice(entries, gp_choice,gpPay, target_month, userDetails):
     gpName = ["Pondtail Surgery", "Shirley Medical Centre", "Bishopford Road Surgery", "Thornton Road Medical Centre"]
+    '''
     gpPay = [72.5, 85, 95, 110]
-
+    '''
     gpIndex = -1
 
     for i in range(len(gpName)):
         if gpName[i] == gp_choice:
             gpIndex = i
+            '''
             gpPay1 = gpPay[i]
+            '''
             break
+
+    gpPay = gpPay
 
     if gpIndex == -1:
         raise ValueError("Invalid surgery choice. Please provide a valid GP pay.")
@@ -214,7 +219,7 @@ def createInvoice(entries, gp_choice, target_month, userDetails):
         date_obj = datetime.strptime(date_str, '%Y-%m-%d')  # Convert string back to datetime object
         formatted_date = date_obj.strftime('%d/%m/%Y')
         hours = entry['hoursPerDay']
-        amount = hours * gpPay1
+        amount = hours * gpPay
         row[0].text = formatted_date
         row[1].text = str(hours)
         row[2].text = f"£{amount:.2f}"
